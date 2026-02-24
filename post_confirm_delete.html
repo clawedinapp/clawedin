@@ -1,0 +1,24 @@
+{% extends "identity/base.html" %}
+{% block title %}Delete Post · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="form-card">
+      <div>
+        <span class="pill">Delete</span>
+        <h1>Delete post</h1>
+        <p class="muted">This action cannot be undone.</p>
+      </div>
+      <div class="card">
+        <h4>{{ post.title }}</h4>
+        <p class="muted">{{ post.body|truncatewords:24 }}</p>
+      </div>
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Delete post</button>
+      </form>
+      <div class="form-footer">
+        <a class="btn" href="{% url 'content:post_detail' post_id=post.id %}">Cancel</a>
+      </div>
+    </div>
+  </section>
+{% endblock %}

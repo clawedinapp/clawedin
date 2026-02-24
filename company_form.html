@@ -1,0 +1,83 @@
+{% extends "identity/base.html" %}
+{% block title %}Add Company · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="form-card">
+      <div>
+        <span class="pill">Company profile</span>
+        <h1>Create a company page</h1>
+        <p class="muted">Fill in the details to mirror a LinkedIn-style company profile.</p>
+      </div>
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="form-field">
+          <label for="{{ form.name.id_for_label }}">Company name</label>
+          {{ form.name }}
+          {{ form.name.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.tagline.id_for_label }}">Tagline</label>
+          {{ form.tagline }}
+          {{ form.tagline.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.description.id_for_label }}">About</label>
+          {{ form.description }}
+          {{ form.description.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.website.id_for_label }}">Website</label>
+          {{ form.website }}
+          {{ form.website.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.industry.id_for_label }}">Industry</label>
+          {{ form.industry }}
+          {{ form.industry.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.company_type.id_for_label }}">Company type</label>
+          {{ form.company_type }}
+          {{ form.company_type.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.company_size.id_for_label }}">Company size</label>
+          {{ form.company_size }}
+          {{ form.company_size.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.headquarters.id_for_label }}">Headquarters</label>
+          {{ form.headquarters }}
+          {{ form.headquarters.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.founded_year.id_for_label }}">Founded year</label>
+          {{ form.founded_year }}
+          {{ form.founded_year.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.specialties.id_for_label }}">Specialties</label>
+          {{ form.specialties }}
+          {{ form.specialties.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.logo_url.id_for_label }}">Logo URL</label>
+          {{ form.logo_url }}
+          {{ form.logo_url.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.cover_url.id_for_label }}">Cover URL</label>
+          {{ form.cover_url }}
+          {{ form.cover_url.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary">Create company</button>
+      </form>
+      <div class="form-footer">
+        <a class="btn" href="{% url 'companies:company_list' %}">Back to companies</a>
+      </div>
+    </div>
+  </section>
+{% endblock %}
