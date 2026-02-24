@@ -1,0 +1,134 @@
+{% extends "identity/base.html" %}
+{% block title %}{{ resume.title }} · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card">
+      <div>
+        <span class="pill">Resume</span>
+        <h1>{{ resume.title }}</h1>
+        <p class="muted">{{ resume.headline|default:"Add a headline for your resume." }}</p>
+      </div>
+      <div class="nav-actions">
+        <a class="btn" href="{% url 'identity:resume_update' resume_id=resume.id %}">Edit resume</a>
+        <a class="btn" href="{% url 'identity:resume_delete' resume_id=resume.id %}">Delete resume</a>
+      </div>
+
+      <div class="card">
+        <h4>Summary</h4>
+        <p>{{ resume.summary|default:"Add a summary to introduce yourself." }}</p>
+      </div>
+      <div class="profile-details">
+        <div class="card">
+          <h4>Contact</h4>
+          <p>Email: {{ resume.email|default:"Not set" }}</p>
+          <p>Phone: {{ resume.phone|default:"Not set" }}</p>
+          <p>Website: {{ resume.website|default:"Not set" }}</p>
+          <p>Location: {{ resume.location|default:"Not set" }}</p>
+        </div>
+        <div class="card">
+          <h4>Experience</h4>
+          <div class="nav-actions">
+            <a class="btn" href="{% url 'identity:experience_create' resume_id=resume.id %}">Add</a>
+          </div>
+          {% for item in resume.experiences.all %}
+            <div class="resume-item">
+              <strong>{{ item.title }}</strong>
+              <p class="muted">{{ item.display_company }}{% if item.location %} • {{ item.location }}{% endif %}</p>
+              <p>{{ item.description|default:"" }}</p>
+              <div class="nav-actions">
+                <a class="btn" href="{% url 'identity:experience_update' resume_id=resume.id item_id=item.id %}">Edit</a>
+                <a class="btn" href="{% url 'identity:experience_delete' resume_id=resume.id item_id=item.id %}">Delete</a>
+              </div>
+            </div>
+          {% empty %}
+            <p class="muted">No experience added yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="profile-details">
+        <div class="card">
+          <h4>Education</h4>
+          <div class="nav-actions">
+            <a class="btn" href="{% url 'identity:education_create' resume_id=resume.id %}">Add</a>
+          </div>
+          {% for item in resume.educations.all %}
+            <div class="resume-item">
+              <strong>{{ item.school }}</strong>
+              <p class="muted">{{ item.degree }} {{ item.field_of_study }}</p>
+              <p>{{ item.description|default:"" }}</p>
+              <div class="nav-actions">
+                <a class="btn" href="{% url 'identity:education_update' resume_id=resume.id item_id=item.id %}">Edit</a>
+                <a class="btn" href="{% url 'identity:education_delete' resume_id=resume.id item_id=item.id %}">Delete</a>
+              </div>
+            </div>
+          {% empty %}
+            <p class="muted">No education added yet.</p>
+          {% endfor %}
+        </div>
+        <div class="card">
+          <h4>Skills</h4>
+          <div class="nav-actions">
+            <a class="btn" href="{% url 'identity:skill_create' resume_id=resume.id %}">Add</a>
+          </div>
+          {% for item in resume.skills.all %}
+            <div class="resume-item">
+              <strong>{{ item.name }}</strong>
+              <p class="muted">{{ item.get_proficiency_display|default:"" }}{% if item.years_of_experience %} • {{ item.years_of_experience }} yrs{% endif %}</p>
+              <div class="nav-actions">
+                <a class="btn" href="{% url 'identity:skill_update' resume_id=resume.id item_id=item.id %}">Edit</a>
+                <a class="btn" href="{% url 'identity:skill_delete' resume_id=resume.id item_id=item.id %}">Delete</a>
+              </div>
+            </div>
+          {% empty %}
+            <p class="muted">No skills added yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="profile-details">
+        <div class="card">
+          <h4>Projects</h4>
+          <div class="nav-actions">
+            <a class="btn" href="{% url 'identity:project_create' resume_id=resume.id %}">Add</a>
+          </div>
+          {% for item in resume.projects.all %}
+            <div class="resume-item">
+              <strong>{{ item.name }}</strong>
+              <p class="muted">{{ item.role }}</p>
+              <p>{{ item.description|default:"" }}</p>
+              <div class="nav-actions">
+                <a class="btn" href="{% url 'identity:project_update' resume_id=resume.id item_id=item.id %}">Edit</a>
+                <a class="btn" href="{% url 'identity:project_delete' resume_id=resume.id item_id=item.id %}">Delete</a>
+              </div>
+            </div>
+          {% empty %}
+            <p class="muted">No projects added yet.</p>
+          {% endfor %}
+        </div>
+        <div class="card">
+          <h4>Certifications</h4>
+          <div class="nav-actions">
+            <a class="btn" href="{% url 'identity:certification_create' resume_id=resume.id %}">Add</a>
+          </div>
+          {% for item in resume.certifications.all %}
+            <div class="resume-item">
+              <strong>{{ item.name }}</strong>
+              <p class="muted">{{ item.issuer }}</p>
+              <div class="nav-actions">
+                <a class="btn" href="{% url 'identity:certification_update' resume_id=resume.id item_id=item.id %}">Edit</a>
+                <a class="btn" href="{% url 'identity:certification_delete' resume_id=resume.id item_id=item.id %}">Delete</a>
+              </div>
+            </div>
+          {% empty %}
+            <p class="muted">No certifications added yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <a class="btn" href="{% url 'identity:resume_list' %}">Back to resumes</a>
+      </div>
+    </div>
+  </section>
+{% endblock %}

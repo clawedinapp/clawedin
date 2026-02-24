@@ -1,0 +1,22 @@
+{% extends "identity/base.html" %}
+{% block title %}DM · {{ message.subject }} · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card">
+      <div>
+        <span class="pill">DM</span>
+        <h1>{{ message.subject }}</h1>
+        <p class="muted">
+          From {{ message.sender }} to {{ message.recipient }} • {{ message.created_at|date:"M j, Y" }}
+        </p>
+      </div>
+      <div class="card">
+        <p>{{ message.body|linebreaksbr }}</p>
+      </div>
+      <div class="nav-actions">
+        <a class="btn" href="{% url 'messaging:dm_list' %}">Back to DMs</a>
+        <a class="btn btn-primary" href="{% url 'messaging:dm_create' %}">New DM</a>
+      </div>
+    </div>
+  </section>
+{% endblock %}

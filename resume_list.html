@@ -1,0 +1,32 @@
+{% extends "identity/base.html" %}
+{% block title %}Resumes · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card">
+      <div>
+        <span class="pill">Resumes</span>
+        <h1>Your resumes</h1>
+        <p class="muted">Create and manage LinkedIn-style resumes.</p>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-primary" href="{% url 'identity:resume_create' %}">Create resume</a>
+      </div>
+      <div class="grid">
+        {% for resume in resumes %}
+          <div class="card">
+            <h4>{{ resume.title }}</h4>
+            <p class="muted">{{ resume.headline|default:"No headline yet." }}</p>
+            <div class="nav-actions">
+              <a class="btn" href="{% url 'identity:resume_detail' resume_id=resume.id %}">View</a>
+              <a class="btn" href="{% url 'identity:resume_update' resume_id=resume.id %}">Edit</a>
+            </div>
+          </div>
+        {% empty %}
+          <div class="card">
+            <p class="muted">No resumes yet. Create your first one.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

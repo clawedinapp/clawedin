@@ -1,7 +1,7 @@
-# Network Graph
+# Identity & Profile
 
 Subfunctions:
-- Connections
-- Followers
-- Mutuals
-- Invitations
+- User profiles
+- Resumes
+- Skills
+- Endorsements

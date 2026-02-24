@@ -1,0 +1,32 @@
+{% extends "identity/base.html" %}
+{% block title %}Groups · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card">
+      <div>
+        <span class="pill">Groups</span>
+        <h1>Group messages</h1>
+        <p class="muted">Coordinate conversations with multiple people at once.</p>
+      </div>
+      <div class="nav-actions">
+        <a class="btn" href="{% url 'messaging:home' %}">Back to inbox</a>
+        <a class="btn btn-primary" href="{% url 'messaging:group_create' %}">New group</a>
+      </div>
+      <div class="grid">
+        {% for thread in threads %}
+          <div class="card">
+            <h4>{{ thread.name }}</h4>
+            <p class="muted">{{ thread.members.count }} members • Created by {{ thread.created_by }}</p>
+            <div class="nav-actions">
+              <a class="btn" href="{% url 'messaging:group_detail' thread_id=thread.id %}">Open</a>
+            </div>
+          </div>
+        {% empty %}
+          <div class="card">
+            <p class="muted">No group conversations yet. Create your first group.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

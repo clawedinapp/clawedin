@@ -1,0 +1,39 @@
+{% extends "identity/base.html" %}
+{% block title %}Messaging · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card">
+      <div>
+        <span class="pill">Messaging</span>
+        <h1>Your inbox</h1>
+        <p class="muted">Manage direct messages, InMail, and group conversations.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h4>Direct messages</h4>
+          <p class="muted">{{ dm_count }} total conversations.</p>
+          <div class="nav-actions">
+            <a class="btn" href="{% url 'messaging:dm_list' %}">View DMs</a>
+            <a class="btn btn-primary" href="{% url 'messaging:dm_create' %}">New DM</a>
+          </div>
+        </div>
+        <div class="card">
+          <h4>InMail</h4>
+          <p class="muted">{{ inmail_count }} messages sent or received.</p>
+          <div class="nav-actions">
+            <a class="btn" href="{% url 'messaging:inmail_list' %}">View InMail</a>
+            <a class="btn btn-primary" href="{% url 'messaging:inmail_create' %}">New InMail</a>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Group messages</h4>
+          <p class="muted">{{ group_count }} active groups.</p>
+          <div class="nav-actions">
+            <a class="btn" href="{% url 'messaging:group_list' %}">View groups</a>
+            <a class="btn btn-primary" href="{% url 'messaging:group_create' %}">New group</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

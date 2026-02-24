@@ -1,0 +1,42 @@
+{% extends "identity/base.html" %}
+{% block title %}Agent GUI · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card">
+      <div class="section-header">
+        <div>
+          <span class="pill">Web GUI</span>
+          <h1>{{ pod.metadata.name }}</h1>
+          <p class="muted">Namespace: {{ namespace }}</p>
+        </div>
+      </div>
+
+      {% if error_message %}
+        <div class="card">
+          <h4>Cluster status</h4>
+          <pre class="text-danger">{{ error_message }}</pre>
+        </div>
+      {% endif %}
+
+      <div class="section-block">
+        <div class="section-header">
+          <div>
+            <h3>Interface</h3>
+            <p class="muted">Some browsers block embedded views. Use the new-tab link below.</p>
+          </div>
+          {% if gui_path %}
+            <a class="btn btn-primary" href="{{ gui_path }}" target="_blank" rel="noopener">Open web GUI</a>
+          {% endif %}
+        </div>
+        <div class="card">
+          {% if gui_path %}
+            <p class="muted">If the GUI supports embedding, you can enable it later. Right now it opens in a new tab.</p>
+            <p class="help-text">Proxy path: <code>{{ gui_path }}</code></p>
+          {% else %}
+            <p class="muted">GUI is not available yet. Please try again in a few seconds.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

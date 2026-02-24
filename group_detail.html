@@ -1,0 +1,53 @@
+{% extends "identity/base.html" %}
+{% block title %}Group · {{ thread.name }} · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card">
+      <div>
+        <span class="pill">Group</span>
+        <h1>{{ thread.name }}</h1>
+        <p class="muted">Created by {{ thread.created_by }} • {{ thread.members.count }} members</p>
+      </div>
+      <div class="card">
+        <h4>Members</h4>
+        <p class="muted">
+          {% for member in members %}
+            {{ member }}{% if not forloop.last %}, {% endif %}
+          {% empty %}
+            No members yet.
+          {% endfor %}
+        </p>
+      </div>
+      <div class="card">
+        <h4>Conversation</h4>
+        <div class="form-grid">
+          {% for message in messages %}
+            <div class="card">
+              <p class="muted">{{ message.sender }} • {{ message.created_at|date:"M j, Y" }}</p>
+              <p>{{ message.body|linebreaksbr }}</p>
+            </div>
+          {% empty %}
+            <p class="muted">No messages yet. Say hello!</p>
+          {% endfor %}
+        </div>
+      </div>
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+        {% for field in form %}
+          <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {{ field.errors }}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Send message</button>
+      </form>
+      <div class="nav-actions">
+        <a class="btn" href="{% url 'messaging:group_list' %}">Back to groups</a>
+      </div>
+    </div>
+  </section>
+{% endblock %}

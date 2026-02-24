@@ -1,0 +1,41 @@
+{% extends "identity/base.html" %}
+{% block title %}InMail · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card">
+      <div>
+        <span class="pill">InMail</span>
+        <h1>InMail</h1>
+        <p class="muted">Priority outreach beyond your direct connections.</p>
+      </div>
+      <div class="nav-actions">
+        <a class="btn" href="{% url 'messaging:home' %}">Back to inbox</a>
+        <a class="btn btn-primary" href="{% url 'messaging:inmail_create' %}">New InMail</a>
+      </div>
+      <div class="grid">
+        {% for message in messages %}
+          <div class="card">
+            <h4>{{ message.subject }}</h4>
+            <p class="muted">
+              {% if message.sender_id == user.id %}
+                Sent to {{ message.recipient }}
+              {% else %}
+                From {{ message.sender }}
+              {% endif %}
+              • {{ message.created_at|date:"M j, Y" }}
+              • {{ message.get_status_display }}
+            </p>
+            <p>{{ message.body|truncatewords:22 }}</p>
+            <div class="nav-actions">
+              <a class="btn" href="{% url 'messaging:inmail_detail' message_id=message.id %}">View</a>
+            </div>
+          </div>
+        {% empty %}
+          <div class="card">
+            <p class="muted">No InMail yet. Reach out directly.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

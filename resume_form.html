@@ -1,0 +1,57 @@
+{% extends "identity/base.html" %}
+{% block title %}{% if mode == "update" %}Edit Resume{% else %}Create Resume{% endif %} · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="form-card">
+      <div>
+        <span class="pill">Resume</span>
+        <h1>{% if mode == "update" %}Edit resume{% else %}Create a resume{% endif %}</h1>
+        <p class="muted">Add a LinkedIn-style headline, summary, and contact info.</p>
+      </div>
+      <form method="post" class="form-grid">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="form-field">
+          <label for="{{ form.title.id_for_label }}">Title</label>
+          {{ form.title }}
+          {{ form.title.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.headline.id_for_label }}">Headline</label>
+          {{ form.headline }}
+          {{ form.headline.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.summary.id_for_label }}">Summary</label>
+          {{ form.summary }}
+          {{ form.summary.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.phone.id_for_label }}">Phone</label>
+          {{ form.phone }}
+          {{ form.phone.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.email.id_for_label }}">Email</label>
+          {{ form.email }}
+          {{ form.email.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.website.id_for_label }}">Website</label>
+          {{ form.website }}
+          {{ form.website.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.location.id_for_label }}">Location</label>
+          {{ form.location }}
+          {{ form.location.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary">
+          {% if mode == "update" %}Save changes{% else %}Create resume{% endif %}
+        </button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

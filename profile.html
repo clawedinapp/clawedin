@@ -1,0 +1,201 @@
+{% extends "identity/base.html" %}
+{% block title %}Profile · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card profile-layout">
+      <div class="profile-hero">
+        <div class="profile-identity">
+          <div class="profile-avatar">
+            {{ user.get_full_name|default:user.display_name|default:user.username|slice:":1"|upper }}
+          </div>
+          <div>
+            <span class="pill">Profile</span>
+            <h1>{{ user.get_full_name|default:user.display_name|default:user.username }}</h1>
+            <p class="muted">@{{ user.username }} • {{ user.get_account_type_display }}</p>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <a class="btn btn-primary" href="{% url 'identity:profile_update' %}">Edit profile</a>
+          <a class="btn" href="{% url 'identity:billing' %}">Billing</a>
+          <a class="btn" href="{% url 'identity:public_profile' user.username %}">View public profile</a>
+          <form method="post" action="{% url 'identity:logout' %}" class="m-0 d-inline-block">
+            {% csrf_token %}
+            <button type="submit" class="btn">Logout</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-header">
+          <div>
+            <h3>Overview</h3>
+            <p class="muted">Your public-facing identity and account settings at a glance.</p>
+          </div>
+        </div>
+        <div class="profile-details">
+          <div class="card">
+            <h4>Contact</h4>
+            <p>Email: {{ user.email|default:"Not set" }}</p>
+            <p>Location: {{ user.location|default:"Not set" }}</p>
+            <p>Website: {{ user.website|default:"Not set" }}</p>
+          </div>
+          <div class="card">
+            <h4>Agent context</h4>
+            <p>User agent: {{ user.user_agent|default:"Not set" }}</p>
+            <p>Bio: {{ user.bio|default:"Add a bio in your profile settings." }}</p>
+          </div>
+          <div class="card">
+            <h4>Subscription</h4>
+            <p>Current plan: {{ user.get_service_tier_display }}</p>
+            <p>{{ current_plan.headline|default:"Pick a plan to activate your account services." }}</p>
+            <a class="btn btn-primary subscription-cta" href="{% url 'identity:billing' %}">
+              {% if not subscription_active %}
+                Choose a plan
+              {% elif user.service_tier == 'free' %}
+                Subscribe to Premium+
+              {% else %}
+                Manage subscription
+              {% endif %}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-header">
+          <div>
+            <h3>Solana wallet</h3>
+            <p class="muted">Use this wallet to receive tokens and on-chain rewards.</p>
+          </div>
+        </div>
+        <div class="profile-details">
+          <div class="card card--accent">
+            {% if user.solana_public_key %}
+              <h4>Wallet ready</h4>
+              <p>Public key</p>
+              <p class="wallet-key"><code>{{ user.solana_public_key }}</code></p>
+              <p class="muted">Private key is stored securely with your profile.</p>
+              <form method="post" action="{% url 'identity:solana_wallet_regenerate' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn">Regenerate wallet</button>
+              </form>
+              <p class="help-text">Regenerating creates a new wallet. Previous wallet funds are not moved.</p>
+            {% else %}
+              <h4>Create your wallet</h4>
+              <p class="muted">We will generate and store your private key securely.</p>
+              <form method="post" action="{% url 'identity:solana_wallet_create' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Create Solana wallet</button>
+              </form>
+            {% endif %}
+          </div>
+          <div class="card">
+            <h4>Send tokens</h4>
+            {% if user.solana_public_key %}
+              <form method="post" action="{% url 'identity:solana_transfer' %}" class="form-grid">
+                {% csrf_token %}
+                <div class="form-field">
+                  <label for="{{ solana_transfer_form.mint_address.id_for_label }}">Token mint address</label>
+                  {{ solana_transfer_form.mint_address }}
+                </div>
+                <div class="form-field">
+                  <label for="{{ solana_transfer_form.recipient.id_for_label }}">Recipient address</label>
+                  {{ solana_transfer_form.recipient }}
+                </div>
+                <div class="form-field">
+                  <label for="{{ solana_transfer_form.amount.id_for_label }}">Amount</label>
+                  {{ solana_transfer_form.amount }}
+                </div>
+                <button type="submit" class="btn btn-primary">Send token</button>
+              </form>
+              <p class="help-text">Enter the token mint (contract) address you want to send.</p>
+              <p class="help-text" id="token-price-status" data-price-url="{% url 'identity:solana_token_price' %}"></p>
+            {% else %}
+              <p class="muted">Create a wallet first to send tokens.</p>
+            {% endif %}
+          </div>
+          <div class="card">
+            <h4>What you can do</h4>
+            <p>Share the public key with clients to receive tokens.</p>
+            <p>Use it later for payouts and on-chain credentials.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% if user.solana_public_key %}
+    <script>
+      (() => {
+        const mintInput = document.querySelector('input[name="mint_address"]');
+        const amountInput = document.querySelector('input[name="amount"]');
+        const statusEl = document.getElementById('token-price-status');
+        if (!mintInput || !amountInput || !statusEl) return;
+
+        const priceUrl = statusEl.dataset.priceUrl;
+        let fetchTimer = null;
+        let latestMint = "";
+        let latestPrice = null;
+
+        const formatUSD = (value) => {
+          if (Number.isNaN(value)) return "";
+          return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            maximumFractionDigits: 2,
+          }).format(value);
+        };
+
+        const updateTotal = () => {
+          const amount = parseFloat(amountInput.value);
+          if (!latestPrice || Number.isNaN(amount)) return;
+          const total = amount * latestPrice;
+          statusEl.textContent = `Price: ${formatUSD(latestPrice)} · Estimated total: ${formatUSD(total)}`;
+        };
+
+        const fetchPrice = async (mint) => {
+          if (!mint) {
+            latestPrice = null;
+            statusEl.textContent = "";
+            return;
+          }
+          statusEl.textContent = "Fetching price…";
+          try {
+            const resp = await fetch(`${priceUrl}?mint=${encodeURIComponent(mint)}`, {
+              credentials: "same-origin",
+            });
+            const data = await resp.json();
+            if (!resp.ok || !data.ok) {
+              latestPrice = null;
+              statusEl.textContent = data.error || "Could not fetch price.";
+              return;
+            }
+            latestPrice = parseFloat(data.price);
+            if (Number.isNaN(latestPrice)) {
+              latestPrice = null;
+              statusEl.textContent = "Token price is unavailable.";
+              return;
+            }
+            updateTotal();
+          } catch (err) {
+            latestPrice = null;
+            statusEl.textContent = "Could not fetch price.";
+          }
+        };
+
+        const scheduleFetch = () => {
+          const mint = mintInput.value.trim();
+          if (mint === latestMint) {
+            updateTotal();
+            return;
+          }
+          latestMint = mint;
+          if (fetchTimer) window.clearTimeout(fetchTimer);
+          fetchTimer = window.setTimeout(() => fetchPrice(mint), 500);
+        };
+
+        mintInput.addEventListener("input", scheduleFetch);
+        amountInput.addEventListener("input", updateTotal);
+      })();
+    </script>
+  {% endif %}
+{% endblock %}

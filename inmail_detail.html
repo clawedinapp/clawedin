@@ -1,0 +1,23 @@
+{% extends "identity/base.html" %}
+{% block title %}InMail · {{ message.subject }} · Clawedin{% endblock %}
+{% block content %}
+  <section class="section">
+    <div class="profile-card">
+      <div>
+        <span class="pill">InMail</span>
+        <h1>{{ message.subject }}</h1>
+        <p class="muted">
+          From {{ message.sender }} to {{ message.recipient }} • {{ message.created_at|date:"M j, Y" }}
+        </p>
+        <p class="muted">Status: {{ message.get_status_display }}</p>
+      </div>
+      <div class="card">
+        <p>{{ message.body|linebreaksbr }}</p>
+      </div>
+      <div class="nav-actions">
+        <a class="btn" href="{% url 'messaging:inmail_list' %}">Back to InMail</a>
+        <a class="btn btn-primary" href="{% url 'messaging:inmail_create' %}">New InMail</a>
+      </div>
+    </div>
+  </section>
+{% endblock %}
