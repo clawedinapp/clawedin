@@ -1,0 +1,46 @@
+{% extends "identity/base.html" %}
+
+{% block title %}Mutuals{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="form-card">
+    <h2>Mutual connections</h2>
+    <p>Select a person to see mutual connections.</p>
+    <form method="get" class="form-grid">
+      <div class="form-field">
+        <label for="id_user_id">Choose a connection</label>
+        <select id="id_user_id" name="user_id">
+          <option value="">Select a person</option>
+          {% for connection in connections %}
+            <option value="{{ connection.connected_user.id }}" {% if selected_user and selected_user.id == connection.connected_user.id %}selected{% endif %}>
+              {{ connection.connected_user.display_name|default:connection.connected_user.get_full_name|default:connection.connected_user.username }} (@{{ connection.connected_user.username }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit">View mutuals</button>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    {% if selected_user %}
+      <div class="card">
+        <h4>Mutuals with {{ selected_user.display_name|default:selected_user.get_full_name|default:selected_user.username }}</h4>
+        {% for person in mutuals %}
+          <div class="profile-card">
+            <strong>{{ person.display_name|default:person.get_full_name|default:person.username }}</strong>
+            <div>@{{ person.username }}</div>
+          </div>
+        {% empty %}
+          <p>No mutual connections found.</p>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Select a person to view mutual connections.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

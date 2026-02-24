@@ -1,0 +1,58 @@
+{% extends "identity/base.html" %}
+
+{% block title %}Network{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="hero">
+    <div>
+      <span class="pill">Network</span>
+      <h1>Build your professional graph.</h1>
+      <p>Search for people, manage invitations, and track your connections.</p>
+      <a class="btn btn-primary" href="{% url 'network:search' %}">Find people</a>
+    </div>
+    <div class="hero-card">
+      <h3>Network snapshot</h3>
+      <div class="grid">
+        <div class="card">
+          <h4>{{ connections_count }}</h4>
+          <p>Connections</p>
+        </div>
+        <div class="card">
+          <h4>{{ followers_count }}</h4>
+          <p>Followers</p>
+        </div>
+        <div class="card">
+          <h4>{{ following_count }}</h4>
+          <p>Following</p>
+        </div>
+        <div class="card">
+          <h4>{{ incoming_invites_count }}</h4>
+          <p>Invitations</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <a class="card" href="{% url 'network:connections' %}">
+      <h4>Connections</h4>
+      <p>Review and manage your connections.</p>
+    </a>
+    <a class="card" href="{% url 'network:followers' %}">
+      <h4>Followers</h4>
+      <p>See who follows you and who you follow.</p>
+    </a>
+    <a class="card" href="{% url 'network:mutuals' %}">
+      <h4>Mutuals</h4>
+      <p>Discover mutual connections.</p>
+    </a>
+    <a class="card" href="{% url 'network:invitations' %}">
+      <h4>Invitations</h4>
+      <p>Accept or withdraw connection requests.</p>
+    </a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "identity/base.html" %}
+
+{% block title %}Network Search{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="form-card">
+    <h2>Find people</h2>
+    <form method="get" class="form-grid">
+      <div class="form-field">
+        <label for="id_q">Search by name or username</label>
+        <input id="id_q" name="q" type="search" placeholder="Search people" value="{{ query }}" />
+      </div>
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    {% if query and results %}
+      {% for person in results %}
+        <div class="card">
+          <h4>{{ person.display_name|default:person.get_full_name|default:person.username }}</h4>
+          <p>@{{ person.username }}</p>
+          <a class="btn" href="{% url 'identity:public_profile' person.username %}">View public profile</a>
+          {% if person.is_follower %}
+            <p class="pill">Follows you</p>
+          {% endif %}
+          <div class="form-grid">
+            {% if person.is_connected %}
+              <div class="pill">Connected</div>
+              <form method="post" action="{% url 'network:connection_remove' person.id %}">
+                {% csrf_token %}
+                <button class="btn" type="submit">Remove connection</button>
+              </form>
+            {% elif person.incoming_invite %}
+              <div class="pill">Invitation received</div>
+              <form method="post" action="{% url 'network:invitation_accept' person.incoming_invite.id %}">
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit">Accept</button>
+              </form>
+              <form method="post" action="{% url 'network:invitation_decline' person.incoming_invite.id %}">
+                {% csrf_token %}
+                <button class="btn" type="submit">Decline</button>
+              </form>
+            {% elif person.outgoing_invite %}
+              <div class="pill">Invitation sent</div>
+            {% else %}
+              <form method="post" action="{% url 'network:invitation_send' person.id %}">
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit">Connect</button>
+              </form>
+            {% endif %}
+            <form method="post" action="{% url 'network:follow_toggle' person.id %}">
+              {% csrf_token %}
+              <button class="btn" type="submit">
+                {% if person.is_following %}Unfollow{% else %}Follow{% endif %}
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% elif query %}
+      <p>No users found.</p>
+    {% else %}
+      <p>Start searching to connect with people.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

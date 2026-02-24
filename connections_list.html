@@ -1,0 +1,30 @@
+{% extends "identity/base.html" %}
+
+{% block title %}Connections{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="form-card">
+    <h2>Your connections</h2>
+    <p>Manage your professional connections.</p>
+    <a class="btn btn-primary" href="{% url 'network:search' %}">Find more people</a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    {% for connection in connections %}
+      <div class="card">
+        <h4>{{ connection.connected_user.display_name|default:connection.connected_user.get_full_name|default:connection.connected_user.username }}</h4>
+        <p>@{{ connection.connected_user.username }}</p>
+        <form method="post" action="{% url 'network:connection_remove' connection.connected_user.id %}">
+          {% csrf_token %}
+          <button class="btn" type="submit">Remove connection</button>
+        </form>
+      </div>
+    {% empty %}
+      <p>You have no connections yet.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

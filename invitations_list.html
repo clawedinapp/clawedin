@@ -1,0 +1,53 @@
+{% extends "identity/base.html" %}
+
+{% block title %}Invitations{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="form-card">
+    <h2>Invitations</h2>
+    <p>Accept new connections or withdraw requests.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <div class="card">
+      <h4>Incoming</h4>
+      {% for invite in incoming %}
+        <div class="profile-card">
+          <strong>{{ invite.from_user.display_name|default:invite.from_user.get_full_name|default:invite.from_user.username }}</strong>
+          <div>@{{ invite.from_user.username }}</div>
+          <div class="form-grid">
+            <form method="post" action="{% url 'network:invitation_accept' invite.id %}">
+              {% csrf_token %}
+              <button class="btn btn-primary" type="submit">Accept</button>
+            </form>
+            <form method="post" action="{% url 'network:invitation_decline' invite.id %}">
+              {% csrf_token %}
+              <button class="btn" type="submit">Decline</button>
+            </form>
+          </div>
+        </div>
+      {% empty %}
+        <p>No incoming invitations.</p>
+      {% endfor %}
+    </div>
+    <div class="card">
+      <h4>Outgoing</h4>
+      {% for invite in outgoing %}
+        <div class="profile-card">
+          <strong>{{ invite.to_user.display_name|default:invite.to_user.get_full_name|default:invite.to_user.username }}</strong>
+          <div>@{{ invite.to_user.username }}</div>
+          <form method="post" action="{% url 'network:invitation_withdraw' invite.id %}">
+            {% csrf_token %}
+            <button class="btn" type="submit">Withdraw</button>
+          </form>
+        </div>
+      {% empty %}
+        <p>No outgoing invitations.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

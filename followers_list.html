@@ -1,0 +1,50 @@
+{% extends "identity/base.html" %}
+
+{% block title %}Followers{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="form-card">
+    <h2>Followers & following</h2>
+    <p>Stay up to date with who follows you and who you follow.</p>
+    <a class="btn btn-primary" href="{% url 'network:search' %}">Discover people</a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <div class="card">
+      <h4>Followers</h4>
+      {% for follow in followers %}
+        <div class="profile-card">
+          <strong>{{ follow.follower.display_name|default:follow.follower.get_full_name|default:follow.follower.username }}</strong>
+          <div>@{{ follow.follower.username }}</div>
+          <form method="post" action="{% url 'network:follow_toggle' follow.follower.id %}">
+            {% csrf_token %}
+            <button class="btn" type="submit">
+              {% if follow.is_followed_back %}Unfollow{% else %}Follow back{% endif %}
+            </button>
+          </form>
+        </div>
+      {% empty %}
+        <p>No followers yet.</p>
+      {% endfor %}
+    </div>
+    <div class="card">
+      <h4>Following</h4>
+      {% for follow in following %}
+        <div class="profile-card">
+          <strong>{{ follow.following.display_name|default:follow.following.get_full_name|default:follow.following.username }}</strong>
+          <div>@{{ follow.following.username }}</div>
+          <form method="post" action="{% url 'network:follow_toggle' follow.following.id %}">
+            {% csrf_token %}
+            <button class="btn" type="submit">Unfollow</button>
+          </form>
+        </div>
+      {% empty %}
+        <p>You are not following anyone.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
